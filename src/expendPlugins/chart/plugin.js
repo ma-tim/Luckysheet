@@ -22,26 +22,36 @@ let _rowLocation = rowLocation;
 let _colLocation = colLocation;
 
 // Dynamically load dependent scripts and styles
-const dependScripts = [
-    "https://unpkg.com/vue@2.6.11/dist/vue.min.js",
-    "https://unpkg.com/vuex@3.4.0/dist/vuex.min.js",
-    "https://unpkg.com/element-ui@2.13.2/lib/index.js",
-    "https://unpkg.com/echarts@4.8.0/dist/echarts.min.js",
-    "./expendPlugins/chart/chartmix.umd.min.js",
-];
+const dependScripts = (baseUrl) => {
+    return [
+        "https://unpkg.com/vue@2.6.11/dist/vue.min.js",
+        "https://unpkg.com/vuex@3.4.0/dist/vuex.min.js",
+        "https://unpkg.com/element-ui@2.13.2/lib/index.js",
+        "https://unpkg.com/echarts@4.8.0/dist/echarts.min.js",
+        `./${baseUrl || ''}expendPlugins/chart/chartmix.umd.min.js`,
+    ];
+}
 
-const dependLinks = [
-    "https://unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css",
-    "./expendPlugins/chart/chartmix.css",
-    // 'http://26.26.26.1:8000/chartmix.css'
-];
+const dependLinks = (baseUrl) => {
+    return [
+        "https://unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css",
+        `./${baseUrl || ''}expendPlugins/chart/chartmix.css`,
+        // 'http://26.26.26.1:8000/chartmix.css'
+    ];
+}
 
-// Initialize the chart component
+/**
+ * Initialize the chart component
+ * @param {*} options 
+ * @param {*} config baseUrl 有时静态资源不在根目录下，添加baseUrl修改静态资源路径
+ * @param {*} isDemo 
+ */
 function chart(options, config, isDemo) {
     const data = options.data;
-    loadLinks(dependLinks);
+    const { baseUrl } = config || {}
+    loadLinks(dependLinks(baseUrl));
 
-    seriesLoadScripts(dependScripts, null, function() {
+    seriesLoadScripts(dependScripts(baseUrl), null, function() {
         const store = new Vuex.Store();
         console.info("chartmix::", chartmix.default);
 
