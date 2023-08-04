@@ -1,4 +1,4 @@
-import { replaceHtml } from '../utils/util';
+import { replaceHtml, getRangeDetailInfoArr } from '../utils/util';
 import formula from '../global/formula';
 import { isRealNum, isRealNull } from '../global/validate';
 import { isdatetime, diff } from '../global/datecontroll';
@@ -290,43 +290,16 @@ const dataVerificationCtrl = {
 
             _this.rangeDialog(dataSource, txt);
 
-            _this.selectRange = [];
-
+            
             let range = _this.getRangeByTxt(txt);
-
+            _this.selectRange = getRangeDetailInfoArr(range)
+            
             formula.rangetosheet = Store.currentSheetIndex;
 
             if(range[0].sheetIndex != Store.currentSheetIndex){
                 sheetmanage.changeSheetExec(range[0].sheetIndex);
             }
 
-            if(range.length > 0){
-                for(let s = 0; s < range.length; s++){
-                    let r1 = range[s].row[0], r2 = range[s].row[1];
-                    let c1 = range[s].column[0], c2 = range[s].column[1];
-
-                    let row = Store.visibledatarow[r2], 
-                        row_pre = r1 - 1 == -1 ? 0 : Store.visibledatarow[r1 - 1];
-                    let col = Store.visibledatacolumn[c2], 
-                        col_pre = c1 - 1 == -1 ? 0 : Store.visibledatacolumn[c1 - 1];
-
-                    _this.selectRange.push({ 
-                        "left": col_pre, 
-                        "width": col - col_pre - 1, 
-                        "top": row_pre, 
-                        "height": row - row_pre - 1, 
-                        "left_move": col_pre, 
-                        "width_move": col - col_pre - 1, 
-                        "top_move": row_pre, 
-                        "height_move": row - row_pre - 1, 
-                        "row": [r1, r2], 
-                        "column": [c1, c2], 
-                        "row_focus": r1, 
-                        "column_focus": c1 
-                    });
-                }
-            }
-            
             selectionCopyShow(_this.selectRange);
         }); 
         $(document).off("click.dvRange2").on("click.dvRange2", "#luckysheet-dataVerification-dialog .show-box-item-dropdown .range .fa-table", function(e) {
@@ -337,9 +310,8 @@ const dataVerificationCtrl = {
 
             _this.rangeDialog(dataSource, txt);
 
-            _this.selectRange = [];
-
             let range = _this.getRangeByTxt(txt);
+            _this.selectRange = getRangeDetailInfoArr(range)
 
             formula.rangetosheet = Store.currentSheetIndex;
 
@@ -347,33 +319,6 @@ const dataVerificationCtrl = {
                 sheetmanage.changeSheetExec(range[0].sheetIndex);
             }
 
-            if(range.length > 0){
-                for(let s = 0; s < range.length; s++){
-                    let r1 = range[s].row[0], r2 = range[s].row[1];
-                    let c1 = range[s].column[0], c2 = range[s].column[1];
-
-                    let row = Store.visibledatarow[r2], 
-                        row_pre = r1 - 1 == -1 ? 0 : Store.visibledatarow[r1 - 1];
-                    let col = Store.visibledatacolumn[c2], 
-                        col_pre = c1 - 1 == -1 ? 0 : Store.visibledatacolumn[c1 - 1];
-
-                    _this.selectRange.push({ 
-                        "left": col_pre, 
-                        "width": col - col_pre - 1, 
-                        "top": row_pre, 
-                        "height": row - row_pre - 1, 
-                        "left_move": col_pre, 
-                        "width_move": col - col_pre - 1, 
-                        "top_move": row_pre, 
-                        "height_move": row - row_pre - 1, 
-                        "row": [r1, r2], 
-                        "column": [c1, c2], 
-                        "row_focus": r1, 
-                        "column_focus": c1 
-                    });
-                }
-            }
-            
             selectionCopyShow(_this.selectRange);
         });
         $(document).off("click.dvRangeConfirm").on("click.dvRangeConfirm", "#luckysheet-dataVerificationRange-dialog-confirm", function(e) {

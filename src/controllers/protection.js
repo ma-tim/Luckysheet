@@ -6,7 +6,7 @@ import { setluckysheet_scroll_status } from '../methods/set';
 import sheetmanage from './sheetmanage';
 import luckysheetsizeauto from './resize';
 import dataVerificationCtrl from './dataVerificationCtrl';
-import { replaceHtml,transformRangeToAbsolute,openSelfModel } from '../utils/util';
+import { replaceHtml,transformRangeToAbsolute,openSelfModel, getRangeDetailInfoArr } from '../utils/util';
 import { selectionCopyShow } from './select';
 import tooltip from '../global/tooltip';
 import cleargridelement from '../global/cleargridelement';
@@ -354,36 +354,9 @@ export function initialEvent(file){
 
         dataVerificationCtrl.rangeDialog(dataSource, txt);
 
-        dataVerificationCtrl.selectRange = [];
-
         let range = dataVerificationCtrl.getRangeByTxt(txt);
-        if(range.length > 0){
-            for(let s = 0; s < range.length; s++){
-                let r1 = range[s].row[0], r2 = range[s].row[1];
-                let c1 = range[s].column[0], c2 = range[s].column[1];
+        dataVerificationCtrl.selectRange = getRangeDetailInfoArr(range)
 
-                let row = Store.visibledatarow[r2], 
-                    row_pre = r1 - 1 == -1 ? 0 : Store.visibledatarow[r1 - 1];
-                let col = Store.visibledatacolumn[c2], 
-                    col_pre = c1 - 1 == -1 ? 0 : Store.visibledatacolumn[c1 - 1];
-
-                dataVerificationCtrl.selectRange.push({ 
-                    "left": col_pre, 
-                    "width": col - col_pre - 1, 
-                    "top": row_pre, 
-                    "height": row - row_pre - 1, 
-                    "left_move": col_pre, 
-                    "width_move": col - col_pre - 1, 
-                    "top_move": row_pre, 
-                    "height_move": row - row_pre - 1, 
-                    "row": [r1, r2], 
-                    "column": [c1, c2], 
-                    "row_focus": r1, 
-                    "column_focus": c1 
-                });
-            }
-        }
-        
         selectionCopyShow(dataVerificationCtrl.selectRange);
     }); 
     $(document).off("click.luckysheetProtection.dvRange2").on("click.luckysheetProtection.dvRange2", "#luckysheet-protection-rangeItem-dialog .show-box-item-dropdown .range .fa-table", function(e) {
@@ -394,35 +367,8 @@ export function initialEvent(file){
 
         dataVerificationCtrl.rangeDialog(dataSource, txt);
 
-        dataVerificationCtrl.selectRange = [];
-
         let range = dataVerificationCtrl.getRangeByTxt(txt);
-        if(range.length > 0){
-            for(let s = 0; s < range.length; s++){
-                let r1 = range[s].row[0], r2 = range[s].row[1];
-                let c1 = range[s].column[0], c2 = range[s].column[1];
-
-                let row = Store.visibledatarow[r2], 
-                    row_pre = r1 - 1 == -1 ? 0 : Store.visibledatarow[r1 - 1];
-                let col = Store.visibledatacolumn[c2], 
-                    col_pre = c1 - 1 == -1 ? 0 : Store.visibledatacolumn[c1 - 1];
-
-                    dataVerificationCtrl.selectRange.push({ 
-                    "left": col_pre, 
-                    "width": col - col_pre - 1, 
-                    "top": row_pre, 
-                    "height": row - row_pre - 1, 
-                    "left_move": col_pre, 
-                    "width_move": col - col_pre - 1, 
-                    "top_move": row_pre, 
-                    "height_move": row - row_pre - 1, 
-                    "row": [r1, r2], 
-                    "column": [c1, c2], 
-                    "row_focus": r1, 
-                    "column_focus": c1 
-                });
-            }
-        }
+        dataVerificationCtrl.selectRange = getRangeDetailInfoArr(range)
         
         selectionCopyShow(dataVerificationCtrl.selectRange);
     });
