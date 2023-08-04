@@ -923,9 +923,9 @@ function getRangeDetailInfo(range) {
  */
 function getRangeDetailInfoArr(rangeArr) {
     const result = []
-    if(range.length > 0){
-        for(let s = 0; s < range.length; s++){
-            const detail = getRangeDetailInfo(range[s])
+    if(rangeArr.length > 0){
+        for(let s = 0; s < rangeArr.length; s++){
+            const detail = getRangeDetailInfo(rangeArr[s])
             result.push(detail)
         }
     }
