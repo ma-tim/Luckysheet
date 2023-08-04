@@ -887,8 +887,6 @@ function camel2split(camel) {
     });
 }
 
-// ==================== 自行 新增方法 =========================
-
 /**
  * 根据range（只包含row column坐标） 转换为range的详细内容（除坐标 还有宽高 偏移量等）
  * @param {Object} range 由getRangeByTxt方法返回{column, row}

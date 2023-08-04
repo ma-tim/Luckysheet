@@ -5930,13 +5930,14 @@ export function getAllChartsBase64(cb) {
             chartMap[item.index] = {}
             item.chart.forEach((chartInfo) => {
                 const chartDom = document.querySelector(`#${chartInfo.chart_id}`);
-                const chartInstance = echarts.getInstanceByDom(chartDom);
-                chartInstance.resize({width:chartInfo.width,height: chartInfo.height,animation: {
-                    duration: 0
-                }})
+                if (chartDom) {
+                    const chartInstance = echarts.getInstanceByDom(chartDom);
+                    chartInstance.resize({width:chartInfo.width,height: chartInfo.height,animation: {
+                        duration: 0
+                    }})
 
-                chartMap[item.index][chartInfo.chart_id] = chartInstance
-                
+                    chartMap[item.index][chartInfo.chart_id] = chartInstance
+                }
             });
 
         }
@@ -6960,8 +6961,6 @@ export function openSearchDialog(source = 1){
     $("#luckysheet-search-replace #searchInput input").focus();
 }
 
-// ======================= 自行 新增api ===========================
-
 export function getCurrentSheetIndex(){
     return Store.currentSheetIndex
 }
@@ -7033,13 +7032,13 @@ export function checkRangeWithinSpecifiedRange(range = [], specifiedRange = []) 
         for(let r=r1;r<=r2;r++){
             for(let c=c1;c<=c2;c++){
                 const within = checkCellWithinSpecifiedRange(r, c , specifiedRange);
-                if(within){
-                    return true;
+                if(!within){
+                    return false;
                 }
             }
         }
     }
-    return false
+    return true
 
 }
 
