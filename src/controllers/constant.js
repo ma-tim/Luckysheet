@@ -618,8 +618,13 @@ function rightclickHTML() {
                             toolbar.cellFormat
                         }</div>
                     </div>
-                    ${customsButtons}
                 </div>
+                ${customsButtons.length > 0 ? `<div>
+                    <div class="luckysheet-menuseparator luckysheet-mousedown-cancel" role="separator" style="display:${
+                        handleincellMenuseparator ? "block" : "none"
+                    };"></div>
+                    ${customsButtons}
+                </div>` : ''}
             </div>
             <div id="luckysheetcopyfor_sub" class="luckysheet-cols-menu luckysheet-rightgclick-menu luckysheet-rightgclick-menu-sub luckysheet-mousedown-cancel">
                 <div id="luckysheet-copy-json-head" data-clipboard-action="copy" data-clipboard-target="#luckysheet-copy-content" class="luckysheet-cols-menuitem luckysheet-copy-btn luckysheet-mousedown-cancel">
