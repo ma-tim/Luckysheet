@@ -126,7 +126,7 @@ function showsheetconfigmenu() {
 
 let luckysheetsheetrightclick = function ($t, $cur, e) {
         //引用单元格范围时，禁止切换sheer
-    if ($("#luckysheet-dataVerificationRange-dialog").is(":visible"))//是否可见
+    if ($("#luckysheet-dataVerificationRange-dialog").is(":visible") || $("#luckysheet-selectionRange-dialog").is(":visible"))//是否可见
     {
         //禁止切换sheer
         window.alert("选择单元格范围窗口打开时，不能切换sheet!");

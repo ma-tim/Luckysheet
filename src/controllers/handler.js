@@ -7,6 +7,7 @@ import luckysheetPostil from "./postil";
 import imageCtrl from "./imageCtrl";
 import hyperlinkCtrl from "./hyperlinkCtrl";
 import dataVerificationCtrl from "./dataVerificationCtrl";
+import customCtrl from "./customCtrl";
 import menuButton from "./menuButton";
 import conditionformat from "./conditionformat";
 import alternateformat from "./alternateformat";
@@ -832,6 +833,139 @@ export default function luckysheetHandler() {
                 $("#luckysheet-singleRange-dialog input").val(range);
 
                 return;
+            }
+
+            // ADD ----->> 自定义单元格范围选择 可多选
+            if ($("#luckysheet-selectionRange-dialog").is(":visible")) {
+                customCtrl.selectStatus = true;
+                Store.luckysheet_select_status = false;
+
+                if (event.shiftKey) {
+                    let last = customCtrl.selectRange[customCtrl.selectRange.length - 1];
+
+                    let top = 0,
+                        height = 0,
+                        rowseleted = [];
+                    if (last.top > row_pre) {
+                        top = row_pre;
+                        height = last.top + last.height - row_pre;
+
+                        if (last.row[1] > last.row_focus) {
+                            last.row[1] = last.row_focus;
+                        }
+
+                        rowseleted = [row_index, last.row[1]];
+                    } else if (last.top == row_pre) {
+                        top = row_pre;
+                        height = last.top + last.height - row_pre;
+                        rowseleted = [row_index, last.row[0]];
+                    } else {
+                        top = last.top;
+                        height = row - last.top - 1;
+
+                        if (last.row[0] < last.row_focus) {
+                            last.row[0] = last.row_focus;
+                        }
+
+                        rowseleted = [last.row[0], row_index];
+                    }
+
+                    let left = 0,
+                        width = 0,
+                        columnseleted = [];
+                    if (last.left > col_pre) {
+                        left = col_pre;
+                        width = last.left + last.width - col_pre;
+
+                        if (last.column[1] > last.column_focus) {
+                            last.column[1] = last.column_focus;
+                        }
+
+                        columnseleted = [col_index, last.column[1]];
+                    } else if (last.left == col_pre) {
+                        left = col_pre;
+                        width = last.left + last.width - col_pre;
+                        columnseleted = [col_index, last.column[0]];
+                    } else {
+                        left = last.left;
+                        width = col - last.left - 1;
+
+                        if (last.column[0] < last.column_focus) {
+                            last.column[0] = last.column_focus;
+                        }
+
+                        columnseleted = [last.column[0], col_index];
+                    }
+
+                    let changeparam = menuButton.mergeMoveMain(
+                        columnseleted,
+                        rowseleted,
+                        last,
+                        top,
+                        height,
+                        left,
+                        width,
+                    );
+                    if (changeparam != null) {
+                        columnseleted = changeparam[0];
+                        rowseleted = changeparam[1];
+                        top = changeparam[2];
+                        height = changeparam[3];
+                        left = changeparam[4];
+                        width = changeparam[5];
+                    }
+
+                    last["row"] = rowseleted;
+                    last["column"] = columnseleted;
+
+                    last["left_move"] = left;
+                    last["width_move"] = width;
+                    last["top_move"] = top;
+                    last["height_move"] = height;
+
+                    customCtrl.selectRange[customCtrl.selectRange.length - 1] = last;
+                } else if (event.ctrlKey) {
+                    customCtrl.selectRange.push({
+                        left: col_pre,
+                        width: col - col_pre - 1,
+                        top: row_pre,
+                        height: row - row_pre - 1,
+                        left_move: col_pre,
+                        width_move: col - col_pre - 1,
+                        top_move: row_pre,
+                        height_move: row - row_pre - 1,
+                        row: [row_index, row_index_ed],
+                        column: [col_index, col_index_ed],
+                        row_focus: row_index,
+                        column_focus: col_index,
+                    });
+                } else {
+                    customCtrl.selectRange = [];
+                    customCtrl.selectRange.push({
+                        left: col_pre,
+                        width: col - col_pre - 1,
+                        top: row_pre,
+                        height: row - row_pre - 1,
+                        left_move: col_pre,
+                        width_move: col - col_pre - 1,
+                        top_move: row_pre,
+                        height_move: row - row_pre - 1,
+                        row: [row_index, row_index_ed],
+                        column: [col_index, col_index_ed],
+                        row_focus: row_index,
+                        column_focus: col_index,
+                    });
+                }
+
+                selectionCopyShow(customCtrl.selectRange);
+
+                let range = customCtrl.getTxtByRange(customCtrl.selectRange);
+                $("#luckysheet-multiRange-dialog input").val(range);
+
+                return;
+            } else {
+                customCtrl.selectStatus = false;
+                customCtrl.selectRange = [];
             }
 
             //数据验证 单元格范围选择
@@ -2384,6 +2518,109 @@ export default function luckysheetHandler() {
 
                     let range = conditionformat.getTxtByRange(conditionformat.selectRange);
                     $("#luckysheet-multiRange-dialog input").val(range);
+                // ADD ----->> customCtrl.selectStatus
+                } else if (customCtrl.selectStatus) {
+                    let mouse = mouseposition(event.pageX, event.pageY);
+                    let x = mouse[0] + $("#luckysheet-cell-main").scrollLeft();
+                    let y = mouse[1] + $("#luckysheet-cell-main").scrollTop();
+
+                    let row_location = rowLocation(y),
+                        row = row_location[1],
+                        row_pre = row_location[0],
+                        row_index = row_location[2];
+                    let col_location = colLocation(x),
+                        col = col_location[1],
+                        col_pre = col_location[0],
+                        col_index = col_location[2];
+
+                    let last = customCtrl.selectRange[customCtrl.selectRange.length - 1];
+
+                    let top = 0,
+                        height = 0,
+                        rowseleted = [];
+                    if (last.top > row_pre) {
+                        top = row_pre;
+                        height = last.top + last.height - row_pre;
+
+                        if (last.row[1] > last.row_focus) {
+                            last.row[1] = last.row_focus;
+                        }
+
+                        rowseleted = [row_index, last.row[1]];
+                    } else if (last.top == row_pre) {
+                        top = row_pre;
+                        height = last.top + last.height - row_pre;
+                        rowseleted = [row_index, last.row[0]];
+                    } else {
+                        top = last.top;
+                        height = row - last.top - 1;
+
+                        if (last.row[0] < last.row_focus) {
+                            last.row[0] = last.row_focus;
+                        }
+
+                        rowseleted = [last.row[0], row_index];
+                    }
+
+                    let left = 0,
+                        width = 0,
+                        columnseleted = [];
+                    if (last.left > col_pre) {
+                        left = col_pre;
+                        width = last.left + last.width - col_pre;
+
+                        if (last.column[1] > last.column_focus) {
+                            last.column[1] = last.column_focus;
+                        }
+
+                        columnseleted = [col_index, last.column[1]];
+                    } else if (last.left == col_pre) {
+                        left = col_pre;
+                        width = last.left + last.width - col_pre;
+                        columnseleted = [col_index, last.column[0]];
+                    } else {
+                        left = last.left;
+                        width = col - last.left - 1;
+
+                        if (last.column[0] < last.column_focus) {
+                            last.column[0] = last.column_focus;
+                        }
+
+                        columnseleted = [last.column[0], col_index];
+                    }
+
+                    let changeparam = menuButton.mergeMoveMain(
+                        columnseleted,
+                        rowseleted,
+                        last,
+                        top,
+                        height,
+                        left,
+                        width,
+                    );
+                    if (changeparam != null) {
+                        columnseleted = changeparam[0];
+                        rowseleted = changeparam[1];
+                        top = changeparam[2];
+                        height = changeparam[3];
+                        left = changeparam[4];
+                        width = changeparam[5];
+                    }
+
+                    last["row"] = rowseleted;
+                    last["column"] = columnseleted;
+
+                    last["left_move"] = left;
+                    last["width_move"] = width;
+                    last["top_move"] = top;
+                    last["height_move"] = height;
+
+                    customCtrl.selectRange[customCtrl.selectRange.length - 1] = last;
+
+                    selectionCopyShow(customCtrl.selectRange);
+
+                    let range = customCtrl.getTxtByRange(customCtrl.selectRange);
+                    $("#luckysheet-selectionRange-dialog input").val(range);
                 } else if (dataVerificationCtrl.selectStatus) {
                     let mouse = mouseposition(event.pageX, event.pageY);
                     let x = mouse[0] + $("#luckysheet-cell-main").scrollLeft();
