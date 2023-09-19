@@ -2141,6 +2141,10 @@ export default function luckysheetHandler() {
                 top: y - pivotTable.movesave.height,
             });
         } else if (Store.luckysheet_sheet_move_status) {
+            // 配置不能移动时 不能拖拽更改排序
+            if (!luckysheetConfigsetting?.sheetRightClickConfig?.move) {
+                return
+            }
             let scrollLeft = $("#luckysheet-sheet-container-c").scrollLeft();
             let x = event.pageX + scrollLeft;
 
