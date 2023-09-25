@@ -6962,7 +6962,7 @@ export function openSearchDialog(source = 1){
 }
 
 export function getCurrentSheetIndex(){
-    return Store.currentSheetIndex
+    return getSheetIndex(Store.currentSheetIndex)
 }
 
 /**
